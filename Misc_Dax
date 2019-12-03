@@ -1,0 +1,16 @@
+//This is a static calendar
+DimCalendar = CALENDAR(DATE(2015,01,01), DATE(2025,01,01))
+
+//If the day of the week is a weekday then 1, else 0
+Weekday = IF(WEEKDAY('DimCalendar'[Date],2)>5,0,1)
+
+//Calculate Business Days Passed
+//Helpful when determining how long an event has been active 
+//Useful to flag records that have been active or open
+BusinessDaysPassed = IF('Table'[EndDate] = BLANK(),
+  CALCULATE(
+  SUM('DimCalendar'[Weekday] = 1),
+  FILTER('DimCalendar','DimCalendar'[Weekday] = 1),
+  DATESBETWEEN('DimCalendar'[Date], 'Table'[StartDate],TODAY())),
+  0
+)
